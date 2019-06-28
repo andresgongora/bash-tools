@@ -94,7 +94,7 @@ printText()
 }
 
 
-printSucc()
+printSuccess()
 {
 	_printBase "$UIO_FC_SUCC" "$UIO_SIGN_SUCC" "$@"
 }
@@ -136,23 +136,57 @@ promptUser()
 {
 	local text="$1"
 	local options="$2"
+	local valid_options="$3"
+	local default_option="$4"
+	local user_choice=
+
 
 	## PROMPT USER
 	printf "  ${UIO_FC_DECO}[${UIO_FC_PRMT}${UIO_SIGN_PRMT}${UIO_FC_DECO}]" > /dev/tty
-	printf "\t${UIO_FC_TEXT}${text}\n" > /dev/tty
-	printf "\t${UIO_FC_NONE}${options}: " > /dev/tty
-
-	## READ USER INPUT
-	local action=
-	read -n 1 action
-
-
-	## CLEAN UP
-	echo "" > /dev/tty
+	printf "\t${UIO_FC_TEXT}${text}" > /dev/tty
+	if [ ! -z "$options" ]; then
+		printf "\n\t${UIO_FC_NONE}${options}: " > /dev/tty
+	else
+		printf ": " > /dev/tty
+	fi
 
 
-	## RETURN
-	echo "$action"
+	
+	while [ -z "$user_choice" ]; do
+
+		## READ USER INPUT
+		## -n 1: read only 1 character 
+		## -s: do not echo
+		local input=
+		read -s -n 1 input
+
+
+		## CHECK IF USER CHOICE IS VALID
+		## - In no input (enter), but default options set, use that one
+		## - If no valid options specified, return whatever
+		## - If valid options specified, check input against them
+		## - Else, do nothing and repeat the while loop
+		if [ "$input" == "" ] && [ ! -z "$default_option" ]; then
+			local user_choice="$default_option"
+			echo "$user_choice" > /dev/tty
+
+		elif  [ -z "$valid_options" ]; then
+			local user_choice="$input"
+			echo "$user_choice" > /dev/tty
+
+		elif [ ! -z $(echo "$input"|sed -n '/['"$valid_options"']/p') ]; then
+			local user_choice="$input"
+			echo "$user_choice" > /dev/tty
+
+		else
+			echo "$user_choice is not a valid option." > /dev/tty
+			printf "\t${UIO_FC_NONE}${options}: " > /dev/tty
+		fi
+	done
+
+
+	## EXIT
+	echo "$user_choice"
 }
 
 
@@ -166,12 +200,12 @@ promptUser()
 
 #printHeader "Hello"
 #printText "Normal text"
-#printSucc "Menssage"
+#printSuccess "Menssage"
 #printInfo "Menssage"
 #printWarn "Menssage"
 #printCrit "Menssage"
 #printError "Menssage"
 
-#var=$(promptUser "Please make a choice now about random stuff" "[h] Hug a koala, [j] jump from a bridge, [n] nothing") && echo "You chose: $var"
+#var=$(promptUser "Please make a choice now about random stuff" "[h] Hug a koala, [j] jump from a bridge, [n] nothing" "jasd")  && echo "You chose: $var"
 
 
