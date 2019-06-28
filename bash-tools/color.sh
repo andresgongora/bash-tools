@@ -146,7 +146,7 @@ get8bitCode()
 		blue)
 			echo 4
 			;;
-		magenta)
+		magenta|purple|pink)
 			echo 5
 			;;
 		cyan)
