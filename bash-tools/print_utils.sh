@@ -219,6 +219,8 @@ printTwoElementsSideBySide()
 
 
 	## GET PRINTABLE AREA SIZE
+	## If print_cols_max specified, then keep the smaller between it and
+	## the current terminal width
 	local term_cols=$(getTerminalNumCols)
 	if [ ! -z "$print_cols_max" ]; then
 		local term_cols=$(( ( $term_cols > $print_cols_max ) ?\
@@ -234,7 +236,12 @@ printTwoElementsSideBySide()
 
 
 	## COMPUTE OPTIMAL HORIZONTAL PADDING
+	echo $term_cols > ~/deleteme.txt
 	local free_cols=$(( $term_cols - $e_1_cols - $e_2_cols ))
+	if [ $free_cols -lt 1 ]; then
+		local free_cols=0
+	fi
+
 	if [ $e_1_cols -gt 0 ] && [ $e_2_cols -gt 0 ]; then
 		local h_pad=$(( $free_cols/3 ))
 		local e_1_h_pad=$h_pad
