@@ -186,18 +186,16 @@ printWithOffset()
 	moveCursorDown "$row"
 
 
-	## GET SPACER
-	local col_spacer=""
+	## EDIT TEXT TO PRINT IN CORRECT COLUMN
+	## If spacer is 1 column or more
+	## - Add spacer at the start of the text
+	## - Add spacer after each line break
+	## Otherwise, do not alter the text
 	if [ $col -gt 0 ]; then
-		local col_spacer="\\\\e[${col}C"
+		col_spacer="\\\\e[${col}C"
+		local text=$(echo "$text" |\
+		             sed "s/^/$col_spacer/g;s/\\\\n/\\\\n$col_spacer/g")
 	fi
-
-
-	## COMPOSE TEXT
-	## Add spacer at the start of the text
-	## Add spacer after each line break
-	local text=$(echo "$text" |\
-		     sed "s/^/$col_spacer/g;s/\\\\n/\\\\n$col_spacer/g")
 	
 
 	## PRINT TEXT WITHOUT LINE WRAP
