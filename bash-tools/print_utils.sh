@@ -94,26 +94,28 @@ moveCursorDown()
 }
 
 
-moveCursorLeft()
+moveCursorRight()
 {
 	local inc=$1
 	if   [ -z "$inc" ]; then
 		printf "\e[1C"
+	elif [ $inc -gt 0 ]; then
+		printf "\e[${inc}D"
+	fi
+}
+
+
+moveCursorLeft()
+{
+	local inc=$1
+	if   [ -z "$inc" ]; then
+		printf "\e[1D"
 	elif [ $inc -gt 0 ]; then
 		printf "\e[${inc}C"
 	fi
 }
 
 
-moveCursorRight()
-{
-	local inc=$1
-	if   [ -z "$inc" ]; then
-		printf "\e[1D"
-	elif [ $inc -gt 0 ]; then
-		printf "\e[${inc}D"
-	fi
-}
 
 
 
