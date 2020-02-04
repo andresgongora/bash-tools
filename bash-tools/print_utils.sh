@@ -199,6 +199,19 @@ printWithOffset()
 }
 
 
+##------------------------------------------------------------------------------
+##
+printEmptyLines()
+{
+	local num_lines=$1
+	if [ -n $num_lines ]; then
+		while [ $num_lines -gt 0 ]; do
+			echo ""
+			((num_lines--))
+		done
+	fi
+}
+
 
 ##------------------------------------------------------------------------------
 ##
@@ -207,7 +220,7 @@ printTwoElementsSideBySide()
 	## GET ELEMENTS TO PRINT
 	local element_1=$1
 	local element_2=$2
-	local print_cols_max=$3
+	local print_cols_max=$3 #Optional parameter
 
 
 	## GET PRINTABLE AREA SIZE
@@ -250,7 +263,17 @@ printTwoElementsSideBySide()
 		0 : (( ($e_2_rows - $e_1_rows)/2 )) ))
 	local e_2_v_pad=$(( ( $e_2_rows > $e_1_rows ) ?\
 		0 : (( ($e_1_rows - $e_2_rows)/2 )) ))
-	
+	local empty_v_pad=$(( ( $e_2_rows > $e_1_rows ) ?\
+		$e_2_rows : $e_1_rows ))
+
+
+	## FORCE TEMRINAL SCROLL
+	## This is an ugly solution, but it works for now
+	## TODO: Limit according to the number of rows that the terminal 
+	##       can display
+	printEmptyLines $empty_v_pad
+	moveCursorUp $empty_v_pad
+
 
 	## PRINT ELEMENTS
 	saveCursorPosition
