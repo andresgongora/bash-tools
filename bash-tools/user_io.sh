@@ -206,6 +206,6 @@ promptUser()
 #printCrit "Menssage"
 #printError "Menssage"
 
-#var=$(promptUser "Please make a choice now about random stuff" "[h] Hug a koala, [j] jump from a bridge, [n] nothing" "jasd")  && echo "You chose: $var"
+#var=$(promptUser "Please make a choice now about random stuff" "[h] Hug a koala, [j] jump from a bridge, [n] nothing" "jasd" "")  && echo "You chose: $var"
 
 
