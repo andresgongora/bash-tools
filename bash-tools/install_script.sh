@@ -26,6 +26,18 @@
 ##	(includes), removes empty lines, and writes everything to a specified
 ##	output file.
 ##
+##	This script contains two functions:
+##	- include() 
+##		is meant to be used by stripts that want to source other
+##		script that may contain functions it needs.
+##
+##	- installScript()
+##		takes an input script, and output script, and an optional
+##		header string. It will parse the input script into the output
+##		file, starting with the optional header. If any "include"
+##		statement is found, the whole "included" script will also be
+##		copied over to produce a self-contained output script.
+##
 ##
 
 
@@ -37,7 +49,14 @@
 
 
 ##------------------------------------------------------------------------------
+## This function is meant to be copied over to any script you are working with.
+## It takes one argument, the relative path (with respect to the script that
+## calls it) to any other script that should be sourced. For example, if script
+## A.sh wants the functions of script B.sh, then, the first lines of A.sh would
+## look something like this:
 ##
+##	include() { local pwd="$PWD" && cd "./$( dirname "${BASH_SOURCE[0]}" )" && source "$1" && cd "$pwd" ; }
+##	include "B.sh"
 ##
 include() { local pwd="$PWD" && cd "./$( dirname "${BASH_SOURCE[0]}" )" && source "$1" && cd "$pwd" ; }
 
@@ -46,10 +65,11 @@ include() { local pwd="$PWD" && cd "./$( dirname "${BASH_SOURCE[0]}" )" && sourc
 
 
 
-
-
 ##------------------------------------------------------------------------------
-##
+## Arguments
+## 1. input script
+## 2. output script (will be overwritten)
+## 3. optional header (a text string) to put at the beguining of the output file
 ##
 installScript()
 {
