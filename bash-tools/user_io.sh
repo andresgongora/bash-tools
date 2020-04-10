@@ -2,7 +2,7 @@
 
 ##  +-----------------------------------+-----------------------------------+
 ##  |                                                                       |
-##  | Copyright (c) 2019, Andres Gongora <mail@andresgongora.com>.          |
+##  | Copyright (c) 2019-2020, Andres Gongora <mail@andresgongora.com>.     |
 ##  |                                                                       |
 ##  | This program is free software: you can redistribute it and/or modify  |
 ##  | it under the terms of the GNU General Public License as published by  |
@@ -206,6 +206,6 @@ promptUser()
 #printCrit "Menssage"
 #printError "Menssage"
 
-#var=$(promptUser "Please make a choice now about random stuff" "[h] Hug a koala, [j] jump from a bridge, [n] nothing" "jasd" "")  && echo "You chose: $var"
+#var=$(promptUser "Please make a choice now about random stuff" "[h] Hug a koala, [j] jump from a bridge, [n] nothing" "jasd")  && echo "You chose: $var"
 
 

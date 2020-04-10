@@ -1,23 +1,23 @@
 #!/bin/bash
 
-##   +-----------------------------------+-----------------------------------+
-##   |                                                                       |
-##   | Copyright (c) 2019, Andres Gongora <mail@andresgongora.com>.          |
-##   |                                                                       |
-##   | This program is free software: you can redistribute it and/or modify  |
-##   | it under the terms of the GNU General Public License as published by  |
-##   | the Free Software Foundation, either version 3 of the License, or     |
-##   | (at your option) any later version.                                   |
-##   |                                                                       |
-##   | This program is distributed in the hope that it will be useful,       |
-##   | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
-##   | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
-##   | GNU General Public License for more details.                          |
-##   |                                                                       |
-##   | You should have received a copy of the GNU General Public License     |
-##   | along with this program. If not, see <http://www.gnu.org/licenses/>.  |
-##   |                                                                       |
-##   +-----------------------------------------------------------------------+
+##  +-----------------------------------+-----------------------------------+
+##  |                                                                       |
+##  | Copyright (c) 2019-2020, Andres Gongora <mail@andresgongora.com>.     |
+##  |                                                                       |
+##  | This program is free software: you can redistribute it and/or modify  |
+##  | it under the terms of the GNU General Public License as published by  |
+##  | the Free Software Foundation, either version 3 of the License, or     |
+##  | (at your option) any later version.                                   |
+##  |                                                                       |
+##  | This program is distributed in the hope that it will be useful,       |
+##  | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
+##  | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
+##  | GNU General Public License for more details.                          |
+##  |                                                                       |
+##  | You should have received a copy of the GNU General Public License     |
+##  | along with this program. If not, see <http://www.gnu.org/licenses/>.  |
+##  |                                                                       |
+##  +-----------------------------------------------------------------------+
 
 
 ##
@@ -94,26 +94,28 @@ moveCursorDown()
 }
 
 
-moveCursorLeft()
+moveCursorRight()
 {
 	local inc=$1
 	if   [ -z "$inc" ]; then
 		printf "\e[1C"
+	elif [ $inc -gt 0 ]; then
+		printf "\e[${inc}D"
+	fi
+}
+
+
+moveCursorLeft()
+{
+	local inc=$1
+	if   [ -z "$inc" ]; then
+		printf "\e[1D"
 	elif [ $inc -gt 0 ]; then
 		printf "\e[${inc}C"
 	fi
 }
 
 
-moveCursorRight()
-{
-	local inc=$1
-	if   [ -z "$inc" ]; then
-		printf "\e[1D"
-	elif [ $inc -gt 0 ]; then
-		printf "\e[${inc}D"
-	fi
-}
 
 
 
@@ -185,32 +187,23 @@ printWithOffset()
 
 
 	## EDIT TEXT TO PRINT IN CORRECT COLUMN
+	## If spacer is 1 column or more
+	## - Add spacer at the start of the text
+	## - Add spacer after each line break
+	## Otherwise, do not alter the text
 	if [ $col -gt 0 ]; then
 		col_spacer="\\\\e[${col}C"
 		local text=$(echo "$text" |\
 		             sed "s/^/$col_spacer/g;s/\\\\n/\\\\n$col_spacer/g")
 	fi
-
 	
+
 	## PRINT TEXT WITHOUT LINE WRAP
 	disableTerminalLineWrap
 	echo -e "${text}"
 	enableTerminalLineWrap
 }
 
-
-##------------------------------------------------------------------------------
-##
-printEmptyLines()
-{
-	local num_lines=$1
-	if [ -n $num_lines ]; then
-		while [ $num_lines -gt 0 ]; do
-			echo ""
-			((num_lines--))
-		done
-	fi
-}
 
 
 ##------------------------------------------------------------------------------
@@ -220,10 +213,12 @@ printTwoElementsSideBySide()
 	## GET ELEMENTS TO PRINT
 	local element_1=$1
 	local element_2=$2
-	local print_cols_max=$3 #Optional parameter
+	local print_cols_max=$3
 
 
 	## GET PRINTABLE AREA SIZE
+	## If print_cols_max specified, then keep the smaller between it and
+	## the current terminal width
 	local term_cols=$(getTerminalNumCols)
 	if [ ! -z "$print_cols_max" ]; then
 		local term_cols=$(( ( $term_cols > $print_cols_max ) ?\
@@ -239,7 +234,12 @@ printTwoElementsSideBySide()
 
 
 	## COMPUTE OPTIMAL HORIZONTAL PADDING
+	echo $term_cols > ~/deleteme.txt
 	local free_cols=$(( $term_cols - $e_1_cols - $e_2_cols ))
+	if [ $free_cols -lt 1 ]; then
+		local free_cols=0
+	fi
+
 	if [ $e_1_cols -gt 0 ] && [ $e_2_cols -gt 0 ]; then
 		local h_pad=$(( $free_cols/3 ))
 		local e_1_h_pad=$h_pad
@@ -263,17 +263,7 @@ printTwoElementsSideBySide()
 		0 : (( ($e_2_rows - $e_1_rows)/2 )) ))
 	local e_2_v_pad=$(( ( $e_2_rows > $e_1_rows ) ?\
 		0 : (( ($e_1_rows - $e_2_rows)/2 )) ))
-	local empty_v_pad=$(( ( $e_2_rows > $e_1_rows ) ?\
-		$e_2_rows : $e_1_rows ))
-
-
-	## FORCE TEMRINAL SCROLL
-	## This is an ugly solution, but it works for now
-	## TODO: Limit according to the number of rows that the terminal 
-	##       can display
-	printEmptyLines $empty_v_pad
-	moveCursorUp $empty_v_pad
-
+	
 
 	## PRINT ELEMENTS
 	saveCursorPosition
@@ -287,8 +277,6 @@ printTwoElementsSideBySide()
 	local max_rows=$(( ( $e_1_rows > $e_2_rows ) ? $e_1_rows : $e_2_rows ))
 	moveCursorDown $(( $max_rows ))
 }
-
-
 
 
 
