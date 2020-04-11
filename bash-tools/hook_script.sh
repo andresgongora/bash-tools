@@ -2,7 +2,7 @@
 
 ##  +-----------------------------------+-----------------------------------+
 ##  |                                                                       |
-##  | Copyright (c) 2020, Andres Gongora <mail@andresgongora.com>.          |
+##  | Copyright (c) 2019-2020, Andres Gongora <mail@andresgongora.com>.     |
 ##  |                                                                       |
 ##  | This program is free software: you can redistribute it and/or modify  |
 ##  | it under the terms of the GNU General Public License as published by  |
@@ -19,11 +19,8 @@
 ##  |                                                                       |
 ##  +-----------------------------------------------------------------------+
 
-
 ##
-##
-##
-##
+##	DESCRIPTION
 ##
 ##
 ##
@@ -31,45 +28,34 @@
 
 
 ##==============================================================================
-##
+##	FUNCTIONS
 ##==============================================================================
 
-getShellName()
+
+
+##------------------------------------------------------------------------------
+##
+##	
+hookScript()
 {
-	local shell=$(grep $(id -un) /etc/passwd |\
-	              awk -F: '{print $7}' |\
-	              sed 's/.*\///')
-	
-	echo "$shell"
-}
+	local script="$1"
+	local script_name=$(basename "$script")
+		
+	local hook=$(printf '%s'\
+	"\n"\
+	"##-----------------------------------------------------\n"\
+	"## ${script_name}\n"\
+	"if [ -f ${script} ]; then\n"\
+	"\tsource ${script}\n"\
+	"fi")
 
-
-
-
-getUserRCFile()
-{
+	## ADD TO RC FILE
+	include() { source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/$1" ; }
+	include 'edit_text_file.sh'
+	include 'shell.sh'
 	local user_shell=$(getShellName)
-
-	case "$user_shell" in
-		bash)		local rc_file="${HOME}/.bashrc" ;;
-		zsh)		local rc_file="${HOME}/.zshrc" ;;
-		*)		local rc_file="${HOME}/.bashrc"
-	esac
-
-	echo "$rc_file"
+	editTextFile $(getUserRCFile) append "$hook"
 }
-
-
-
-
-
-
-##==============================================================================
-##	TEST
-##==============================================================================
-
-#getShellName
-
 
 
 

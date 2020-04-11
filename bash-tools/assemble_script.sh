@@ -31,7 +31,7 @@
 ##		is meant to be used by stripts that want to source other
 ##		script that may contain functions it needs.
 ##
-##	- installScript()
+##	- assembleScript()
 ##		takes an input script, and output script, and an optional
 ##		header string. It will parse the input script into the output
 ##		file, starting with the optional header. If any "include"
@@ -71,7 +71,7 @@ include() { source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && 
 ## 2. output script (will be overwritten)
 ## 3. optional header (a text string) to put at the beguining of the output file
 ##
-installScript()
+assembleScript()
 {
 
 	## ---------------------------------------------------------------------
@@ -172,6 +172,9 @@ installScript()
 		copyIncludes "$input_script" "$output_script"
 		copyFileContent "$input_script" "$output_script"
 		chmod +x "$output_script"
+
+		## CREATE HOOK
+		[ "$hook_script" == True ] && hookScript "$output_script"
 
 	else
 		echo "installScript: file not found $input_script" && exit 1
