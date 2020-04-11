@@ -85,6 +85,11 @@ installScript()
 
 		if [ -f "$input_script" -a -f "$output_script" ]; then
 			cat "$input_script" | grep -v "$regex_include" >> "$output_script"
+		else
+			echo "installScript:copyFileContent failed"
+			[ -f "$input_script" ] || echo "input script $input_script not found"
+			[ -f "$output_script" ] || echo "output script $output_script not found"
+			exit 1
 		fi
 	}
 
@@ -100,25 +105,38 @@ installScript()
 		local output_script=$2
 		local input_script_dir=$( dirname "$input_script" )
 
+		[ $verbose == true ] && echo -e "\ncopyIncludes()"
+		[ $verbose == true ] && echo "$input_script"
+		[ $verbose == true ] && echo "$output_script"
+
 		if [ -f "$input_script" -a -f "$output_script" ]; then
 
 			## SEARCH FOR ALL DEPENDENCIES IN INPUT SCRIPT
 			local includes=($(cat "$input_script" |\
 				          grep "$regex_include" |\
-				          sed -e 's|^[ \t]*include[ \t]||g;s|["'\'']||g' ))
+				          sed -e 's/^[ \t]*include[ \t]//g;s/["'\'']//g' ))
 
+			
 
-			## COPY DEPENDENCIES OVER 
-			for dependency in "$includes"; do
+			## COPY DEPENDENCIES OVER (IF ANY)
+			[ $verbose == true ] && echo -e "${#includes[@]} includes:\n${includes[@]}"
+			if [ ${#includes[@]} -ge 1 ]; then
+				for dependency in "${includes[@]}"; do
 
-				## HANDLE RECURSIVELY
-				local dependency_file="$input_script_dir/$dependency"
-				copyIncludes "$dependency_file" "$output_script"
-				
-				## COPY INTO OUTPUT FILE
-				copyFileContent "$dependency_file" "$output_script"
-			done
+					## HANDLE RECURSIVELY
+					local dependency_file="$input_script_dir/$dependency"
+					copyIncludes "$dependency_file" "$output_script"
+					
+					## COPY INTO OUTPUT FILE
+					copyFileContent "$dependency_file" "$output_script"
+				done
+			fi
 
+		else
+			echo "installScript:copyIncludes failed"
+			[ -f "$input_script" ] || echo "input script $input_script not found"
+			[ -f "$output_script" ] || echo "output script $output_script not found"
+			exit 1
 		fi
 	}
 
@@ -127,6 +145,10 @@ installScript()
 	##----------------------------------------------------------------------
 
 
+	if [ "$#" -lt 2 ]; then
+		echo "installScript: at least 2 arguments expected, $@" 
+		return
+	fi
 
 	local input_script=$1
 	local output_script=$2
@@ -135,7 +157,10 @@ installScript()
 	local input_dir=$( dirname "$input_script" )
 	local output_dir=$( dirname "$output_script" )
 	local regex_include="^[ \t]*include[ \t]"
+	local verbose=false
 
+
+	[ $verbose == true ] && echo "$input_script -> $output_script"
 	if [ -f "$input_script" ]; then
 		
 		## CREATE OUTPUT FILE AND WRITE HEADER (IF ANY)	
@@ -143,19 +168,24 @@ installScript()
 		echo -e "#!/bin/bash\n" > "$output_script"
 		[ -z "$script_header" ] || echo -e "$script_header" >> "$output_script"
 
-		## PARSE INCLUDES AND COPY SCRIPT
+		## PARSE INCLUDES, COPY SCRIPT, MAKE EXECUTABLE
 		copyIncludes "$input_script" "$output_script"
 		copyFileContent "$input_script" "$output_script"
+		chmod +x "$output_script"
 
 	else
-		echo "Arguments not valid" && exit 1
+		echo "installScript: file not found $input_script" && exit 1
 	fi
 }
 
 
 
-installScript "$@"
 
 
 
+##==============================================================================
+##	SCRIPT
+##==============================================================================
+
+#installScript "$@"
 
