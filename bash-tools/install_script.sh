@@ -58,7 +58,7 @@
 ##	include() { local pwd="$PWD" && cd "./$( dirname "${BASH_SOURCE[0]}" )" && source "$1" && cd "$pwd" ; }
 ##	include "B.sh"
 ##
-include() { local pwd="$PWD" && cd "./$( dirname "${BASH_SOURCE[0]}" )" && source "$1" && cd "$pwd" ; }
+include() { source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/$1" ; }
 
 
 
