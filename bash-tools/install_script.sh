@@ -55,7 +55,7 @@
 ## A.sh wants the functions of script B.sh, then, the first lines of A.sh would
 ## look something like this:
 ##
-##	include() { local pwd="$PWD" && cd "./$( dirname "${BASH_SOURCE[0]}" )" && source "$1" && cd "$pwd" ; }
+##	include() { ··· }
 ##	include "B.sh"
 ##
 include() { source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/$1" ; }
