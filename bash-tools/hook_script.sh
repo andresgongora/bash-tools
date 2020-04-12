@@ -28,19 +28,19 @@
 
 
 ##==============================================================================
-##	FUNCTIONS
-##==============================================================================
-
-
-
-##------------------------------------------------------------------------------
 ##
 ##	
 hookScript()
 {
+	include() { source "$( cd $( dirname "${BASH_SOURCE[0]}" ) >/dev/null 2>&1 && pwd )/$1" ; }
+	include 'edit_text_file.sh'
+	include 'shell.sh'
+
+
 	local script="$1"
 	local script_name=$(basename "$script")
 		
+
 	local hook=$(printf '%s'\
 	"\n"\
 	"##-----------------------------------------------------\n"\
@@ -49,10 +49,8 @@ hookScript()
 	"\tsource ${script}\n"\
 	"fi")
 
+
 	## ADD TO RC FILE
-	include() { source "$( cd $( dirname "${BASH_SOURCE[0]}" ) >/dev/null 2>&1 && pwd )/$1" ; }
-	include 'edit_text_file.sh'
-	include 'shell.sh'
 	local user_shell=$(getShellName)
 	editTextFile $(getUserRCFile) append "$hook"
 }
