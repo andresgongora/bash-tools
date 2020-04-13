@@ -84,7 +84,9 @@ assembleScript()
 		local output_script=$2
 
 		if [ -f "$input_script" -a -f "$output_script" ]; then
-			cat "$input_script" | grep -v "$regex_include" >> "$output_script"
+			cat "$input_script" |\
+				grep -v "$regex_include" |\
+				sed '/^[ \t]*$/d' >> "$output_script"
 		else
 			echo "installScript:copyFileContent failed"
 			[ -f "$input_script" ] || echo "input script $input_script not found"
