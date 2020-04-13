@@ -35,11 +35,8 @@
 ##	COPNFIGURATION
 ##==============================================================================
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-if [ "$(type -t getFormatCode)" != 'function' ]; then
-	source "$DIR/color.sh"
-fi
-unset DIR
+include() { source "$( cd $( dirname "${BASH_SOURCE[0]}" ) >/dev/null 2>&1 && pwd )/$1" ; }
+include 'color.sh'
 
 
 UIO_FC_DECO=$(getFormatCode -c none   -e bold)
@@ -63,8 +60,10 @@ UIO_SIGN_PRMT="??"
 
 
 
+
+
 ##==============================================================================
-##	OUTPUT
+##	HELPER FUNCTIONS
 ##==============================================================================
 
 _printBase()
@@ -82,55 +81,25 @@ _printBase()
 }
 
 
-printHeader()
-{
-	_printBase "$UIO_FC_HEAD" "" "\n\t${UIO_FC_HEAD}$@\n"
-}
-
-
-printText()
-{
-	_printBase "$UIO_FC_TEXT" "" "$@"
-}
-
-
-printSuccess()
-{
-	_printBase "$UIO_FC_SUCC" "$UIO_SIGN_SUCC" "$@"
-}
-
-
-printInfo()
-{
-	_printBase "$UIO_FC_INFO" "$UIO_SIGN_INFO" "$@"
-}
-
-
-printWarn()
-{
-	_printBase "$UIO_FC_WARN" "$UIO_SIGN_WARN" "$@"
-}
-
-
-printCrit()
-{
-	_printBase "$UIO_FC_CRIT" "$UIO_SIGN_CRIT" "$@"
-}
-
-
-printError()
-{
-	_printBase "$UIO_FC_ERRO" "$UIO_SIGN_ERRO" "$@"
-}
-
-
 
 
 
 
 ##==============================================================================
-##	INPUT
+##	FUNCTIONS
 ##==============================================================================
+
+
+
+printHeader()   { _printBase "$UIO_FC_HEAD" "" "\n\t${UIO_FC_HEAD}$@\n"      ; }
+printText()     { _printBase "$UIO_FC_TEXT" "" "$@"                          ; }
+printSuccess()  { _printBase "$UIO_FC_SUCC" "$UIO_SIGN_SUCC" "$@"            ; }
+printInfo()     { _printBase "$UIO_FC_INFO" "$UIO_SIGN_INFO" "$@"            ; }
+printWarn()     { _printBase "$UIO_FC_WARN" "$UIO_SIGN_WARN" "$@"            ; }
+printCrit()     { _printBase "$UIO_FC_CRIT" "$UIO_SIGN_CRIT" "$@"            ; }
+printError()    { _printBase "$UIO_FC_ERRO" "$UIO_SIGN_ERRO" "$@"            ; }
+
+
 
 promptUser()
 {
@@ -174,7 +143,7 @@ promptUser()
 			local user_choice="$input"
 			echo "$user_choice" > /dev/tty
 
-		elif [ ! -z $(echo "$input"|sed -n '/['"$valid_options"']/p') ]; then
+		elif [ ! -z $(echo "$input" | sed -n '/['"$valid_options"']/p') ]; then
 			local user_choice="$input"
 			echo "$user_choice" > /dev/tty
 

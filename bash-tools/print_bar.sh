@@ -22,9 +22,7 @@
 
 
 ##==============================================================================
-##
-##	printBar(CURRENT, MAX, SIZE, COLOR, COLOR)
-##
+##	printBar
 ##	Prints a bar that is filled depending on the relation between
 ##	CURRENT and MAX. Example: [|||||    ]
 ##

@@ -86,6 +86,7 @@ assembleScript()
 		if [ -f "$input_script" -a -f "$output_script" ]; then
 			cat "$input_script" |\
 				grep -v "$regex_include" |\
+				grep -v "^[ \t]*include()" |\
 				sed '/^[ \t]*$/d' >> "$output_script"
 		else
 			echo "installScript:copyFileContent failed"
