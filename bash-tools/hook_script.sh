@@ -24,7 +24,7 @@
 ##
 ##
 ##
-include(){ local d=$PWD; cd "$(dirname $PWD/$1 )"; . "$(basename $1)"; cd "$d";}
+include(){ [ -z "$_IR" ]&&_IR="$PWD"&&cd $( dirname "$PWD/$0" )&&. "$1"&&cd "$_IR"&&unset _IR||. $1;}
 include 'edit_text_file.sh'
 include 'shell.sh'
 
