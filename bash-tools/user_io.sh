@@ -35,7 +35,7 @@
 ##	COPNFIGURATION
 ##==============================================================================
 
-include() { source "$( cd $( dirname "${BASH_SOURCE[0]}" ) >/dev/null 2>&1 && pwd )/$1" ; }
+include(){ local d=$PWD; cd "$(dirname $PWD/$1 )"; . "$(basename $1)"; cd "$d";}
 include 'color.sh'
 
 
