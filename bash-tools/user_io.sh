@@ -35,8 +35,11 @@
 ##	COPNFIGURATION
 ##==============================================================================
 
-include(){ local d=$PWD; cd "$(dirname $PWD/$1 )"; . "$(basename $1)"; cd "$d";}
-include 'color.sh'
+
+include(){ { [ -z "$_IR" ]&&_IR="$PWD"&&cd "$(dirname "$PWD/$0")"&&include "$1"&&cd "$_IR"&&unset _IR;}||{ local d=$PWD&&cd "$(dirname "$PWD/$1")"&&. "$(basename "$1")"&&cd "$d";}||{ echo "Include failed $PWD->$1"&&exit 1;};}
+
+include "color.sh"
+
 
 
 UIO_FC_DECO=$(getFormatCode -c none   -e bold)
