@@ -156,6 +156,3 @@ installScript()
 
 installScript "$@"
 
-
-
-
