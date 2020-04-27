@@ -21,55 +21,89 @@
 
 
 ##
+##	DESCRIPTION:
 ##
 ##
 ##
-##
-##
-##
+
 
 
 
 ##==============================================================================
-##
+##	HELPERS
 ##==============================================================================
 
-getShellName()
+
+##==============================================================================
+##
+##
+
+
+
+
+
+
+##==============================================================================
+##	FUNCTIONS
+##==============================================================================
+
+
+##==============================================================================
+##
+##
+assert_is_set()
 {
-	local shell=$(grep $(id -un) /etc/passwd |\
-	              awk -F: '{print $7}' |\
-	              sed 's/.*\///')
-	
-	echo "$shell"
+	local ok=0
+	local assert_failed=98
+
+
+	if [ -z ${1+x} ]; then 
+		echo "Assertion failed, variable not set."
+		return $assert_failed
+	else
+		return $ok
+	fi
 }
 
 
 
 
-getUserRCFile()
+##==============================================================================
+##
+##
+assert_not_empty()
 {
-	local user_shell=$(getShellName)
+	local ok=0
+	local assert_failed=98
+	local variable=$1
 
-	case "$user_shell" in
-		bash)		local rc_file="${HOME}/.bashrc" ;;
-		zsh)		local rc_file="${HOME}/.zshrc" ;;
-		*)		local rc_file="${HOME}/.bashrc"
-	esac
 
-	echo "$rc_file"
+	if [ -z $variable ]; then 
+		echo "Assertion failed, variable empty. $message"
+		return $assert_failed
+	else
+		return $ok
+	fi
 }
 
 
 
 
-
-
 ##==============================================================================
-##	TEST
-##==============================================================================
+##
+##
+assert_empty()
+{
+	local ok=0
+	local assert_failed=98
+	assert_is_set $1
+	local variable=$1
 
-#getShellName
 
-
-
-
+	if [ -n $variable ]; then 
+		echo "Assertion failed, variable empty. $message"
+		return $assert_failed
+	else
+		return $ok
+	fi
+}

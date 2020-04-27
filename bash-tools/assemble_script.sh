@@ -31,7 +31,7 @@
 ##		is meant to be used by stripts that want to source other
 ##		script that may contain functions it needs.
 ##
-##	- installScript()
+##	- assembleScript()
 ##		takes an input script, and output script, and an optional
 ##		header string. It will parse the input script into the output
 ##		file, starting with the optional header. If any "include"
@@ -55,12 +55,14 @@
 ## A.sh wants the functions of script B.sh, then, the first lines of A.sh would
 ## look something like this:
 ##
-##	include() { local pwd="$PWD" && cd "./$( dirname "${BASH_SOURCE[0]}" )" && source "$1" && cd "$pwd" ; }
+##	include() { ··· }
 ##	include "B.sh"
 ##
-include() { local pwd="$PWD" && cd "./$( dirname "${BASH_SOURCE[0]}" )" && source "$1" && cd "$pwd" ; }
-
-
+##include() { source "$( cd $( dirname "${BASH_SOURCE[0]}" ) >/dev/null 2>&1 && pwd )/$1" ; } #this one has problems with recursivity
+##include(){ local d=$PWD; cd "$(dirname $PWD/$1 )"; . "$(basename $1)"; cd "$d";} # issues if script called from a different pwd
+#include(){ [ -z "$_IR" ]&&_IR="$PWD"&&cd $( dirname "$PWD/$0" )&&. "$1"&&cd "$_IR"&&unset _IR||. $1;}# does not include sub-includes if in a different path
+##include(){ { [ -z "$_IR" ]&&_IR="$PWD"&&cd "$(dirname "$PWD/$0")"&&include "$1"&&cd "$_IR"&&unset _IR;}||{ local d=$PWD&&cd "$(dirname "$PWD/$1")"&&. "$(basename "$1")"&&cd "$d";}||{ echo "Include failed $PWD->$1"&&exit 1;};} ## issues when script is sourced
+[ "$(type -t include)" != 'function' ]&&{ include(){ { [ -z "$_IR" ]&&_IR="$PWD"&&cd $(dirname "${BASH_SOURCE[0]}")&&include "$1"&&cd "$_IR"&&unset _IR;}||{ local d=$PWD&&cd "$(dirname "$PWD/$1")"&&. "$(basename "$1")"&&cd "$d";}||{ echo "Include failed $PWD->$1"&&exit 1;};};}
 
 
 
@@ -71,7 +73,7 @@ include() { local pwd="$PWD" && cd "./$( dirname "${BASH_SOURCE[0]}" )" && sourc
 ## 2. output script (will be overwritten)
 ## 3. optional header (a text string) to put at the beguining of the output file
 ##
-installScript()
+assembleScript()
 {
 
 	## ---------------------------------------------------------------------
@@ -84,7 +86,15 @@ installScript()
 		local output_script=$2
 
 		if [ -f "$input_script" -a -f "$output_script" ]; then
-			cat "$input_script" | grep -v "$regex_include" >> "$output_script"
+			cat "$input_script" |\
+				grep -v "$regex_include" |\
+				grep -v "^[ \t]*include()" |\
+				sed '/^[ \t]*$/d' >> "$output_script"
+		else
+			echo "installScript:copyFileContent failed"
+			[ -f "$input_script" ] || echo "input script $input_script not found"
+			[ -f "$output_script" ] || echo "output script $output_script not found"
+			exit 1
 		fi
 	}
 
@@ -100,25 +110,38 @@ installScript()
 		local output_script=$2
 		local input_script_dir=$( dirname "$input_script" )
 
+		[ $verbose == true ] && echo -e "\ncopyIncludes()"
+		[ $verbose == true ] && echo "$input_script"
+		[ $verbose == true ] && echo "$output_script"
+
 		if [ -f "$input_script" -a -f "$output_script" ]; then
 
 			## SEARCH FOR ALL DEPENDENCIES IN INPUT SCRIPT
 			local includes=($(cat "$input_script" |\
 				          grep "$regex_include" |\
-				          sed -e 's|^[ \t]*include[ \t]||g;s|["'\'']||g' ))
+				          sed -e 's/^[ \t]*include[ \t]//g;s/["'\'']//g' ))
 
+			
 
-			## COPY DEPENDENCIES OVER 
-			for dependency in "$includes"; do
+			## COPY DEPENDENCIES OVER (IF ANY)
+			[ $verbose == true ] && echo -e "${#includes[@]} includes:\n${includes[@]}"
+			if [ ${#includes[@]} -ge 1 ]; then
+				for dependency in "${includes[@]}"; do
 
-				## HANDLE RECURSIVELY
-				local dependency_file="$input_script_dir/$dependency"
-				copyIncludes "$dependency_file" "$output_script"
-				
-				## COPY INTO OUTPUT FILE
-				copyFileContent "$dependency_file" "$output_script"
-			done
+					## HANDLE RECURSIVELY
+					local dependency_file="$input_script_dir/$dependency"
+					copyIncludes "$dependency_file" "$output_script"
+					
+					## COPY INTO OUTPUT FILE
+					copyFileContent "$dependency_file" "$output_script"
+				done
+			fi
 
+		else
+			echo "installScript:copyIncludes failed"
+			[ -f "$input_script" ] || echo "input script $input_script not found"
+			[ -f "$output_script" ] || echo "output script $output_script not found"
+			exit 1
 		fi
 	}
 
@@ -127,6 +150,10 @@ installScript()
 	##----------------------------------------------------------------------
 
 
+	if [ "$#" -lt 2 ]; then
+		echo "installScript: at least 2 arguments expected, $@" 
+		return
+	fi
 
 	local input_script=$1
 	local output_script=$2
@@ -135,7 +162,10 @@ installScript()
 	local input_dir=$( dirname "$input_script" )
 	local output_dir=$( dirname "$output_script" )
 	local regex_include="^[ \t]*include[ \t]"
+	local verbose=false
 
+
+	[ $verbose == true ] && echo "$input_script -> $output_script"
 	if [ -f "$input_script" ]; then
 		
 		## CREATE OUTPUT FILE AND WRITE HEADER (IF ANY)	
@@ -143,16 +173,30 @@ installScript()
 		echo -e "#!/bin/bash\n" > "$output_script"
 		[ -z "$script_header" ] || echo -e "$script_header" >> "$output_script"
 
-		## PARSE INCLUDES AND COPY SCRIPT
+		## PARSE INCLUDES, COPY SCRIPT, MAKE EXECUTABLE
 		copyIncludes "$input_script" "$output_script"
 		copyFileContent "$input_script" "$output_script"
+		chmod +x "$output_script"
+
+		## CREATE HOOK
+		[ "$hook_script" == True ] && hookScript "$output_script"
 
 	else
-		echo "Arguments not valid" && exit 1
+		echo "installScript: file not found $input_script" && exit 1
 	fi
 }
 
 
 
-installScript "$@"
 
+<<<<<<< ours:bash-tools/install_script.sh
+=======
+
+
+##==============================================================================
+##	SCRIPT
+##==============================================================================
+
+#installScript "$@"
+
+>>>>>>> theirs:bash-tools/assemble_script.sh

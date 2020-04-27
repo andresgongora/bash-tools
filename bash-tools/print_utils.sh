@@ -234,7 +234,6 @@ printTwoElementsSideBySide()
 
 
 	## COMPUTE OPTIMAL HORIZONTAL PADDING
-	echo $term_cols > ~/deleteme.txt
 	local free_cols=$(( $term_cols - $e_1_cols - $e_2_cols ))
 	if [ $free_cols -lt 1 ]; then
 		local free_cols=0
@@ -263,9 +262,14 @@ printTwoElementsSideBySide()
 		0 : (( ($e_2_rows - $e_1_rows)/2 )) ))
 	local e_2_v_pad=$(( ( $e_2_rows > $e_1_rows ) ?\
 		0 : (( ($e_1_rows - $e_2_rows)/2 )) ))
+	local max_rows=$(( ( $e_1_rows > $e_2_rows ) ? $e_1_rows : $e_2_rows ))
 	
 
-	## PRINT ELEMENTS
+	## CLEAN PRINTING AREA
+	for i in `seq $max_rows`; do printf "\n"; done
+	moveCursorUp $max_rows
+
+
 	saveCursorPosition
 	printWithOffset $e_1_v_pad $e_1_h_pad "$element_1"
 	moveCursorToSavedPosition
@@ -273,8 +277,7 @@ printTwoElementsSideBySide()
 	moveCursorToSavedPosition
 
 
-	## LEAVE CURSOR AT "SAFE" POSITION
-	local max_rows=$(( ( $e_1_rows > $e_2_rows ) ? $e_1_rows : $e_2_rows ))
+	## LEAVE CURSOR AT "SAFE" POSITION	
 	moveCursorDown $(( $max_rows ))
 }
 
