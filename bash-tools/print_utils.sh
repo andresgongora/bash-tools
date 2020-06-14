@@ -234,7 +234,6 @@ printTwoElementsSideBySide()
 
 
 	## COMPUTE OPTIMAL HORIZONTAL PADDING
-	echo $term_cols > ~/deleteme.txt
 	local free_cols=$(( $term_cols - $e_1_cols - $e_2_cols ))
 	if [ $free_cols -lt 1 ]; then
 		local free_cols=0
