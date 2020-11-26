@@ -189,9 +189,6 @@ assembleScript()
 
 
 
-<<<<<<< ours:bash-tools/install_script.sh
-=======
-
 
 ##==============================================================================
 ##	SCRIPT
@@ -199,4 +196,3 @@ assembleScript()
 
 #installScript "$@"
 
->>>>>>> theirs:bash-tools/assemble_script.sh
