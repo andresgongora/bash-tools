@@ -266,7 +266,7 @@ printTwoElementsSideBySide()
 	
 
 	## CLEAN PRINTING AREA
-	for i in `seq $max_rows`; do printf "\n"; done
+	for i in $(seq $max_rows); do printf "\n"; done
 	moveCursorUp $max_rows
 
 

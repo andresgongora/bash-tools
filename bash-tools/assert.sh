@@ -100,7 +100,7 @@ assert_empty()
 	local variable=$1
 
 
-	if [ -n $variable ]; then 
+	if [ -n "$variable" ]; then 
 		echo "Assertion failed, variable empty. $message"
 		return $assert_failed
 	else
