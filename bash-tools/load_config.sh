@@ -145,7 +145,7 @@ loadConfigFile() {
 		## - Get key (should be first element)
 		## - Get param (rest of line, when key deleted)
 		set -- $( echo "$line" | sed -e 's/\\//g;s/".*"/X/g' )
-		if [ ! -z "$line" ] && [ "$#" -gt 1 ]; then
+		if [ -n "$line" ] && [ "$#" -gt 1 ]; then
 
 			## GET KEY-PARAMETER PAIR
 			## - Get key as first parameter
@@ -164,7 +164,7 @@ loadConfigFile() {
 			## parameters from the config file that
 			## are not even used by the caller
 			eval config_key_current_value=\$$config_key_name
-			if [ ! -z "$config_key_current_value" ]; then
+			if [ -n "$config_key_current_value" ]; then
 
 				## LOAD CONFIG PARAMETER
 				export "${config_key_name}"="$config_param"

@@ -124,7 +124,7 @@ assembleScript()
 			
 
 			## COPY DEPENDENCIES OVER (IF ANY)
-			[ $verbose == true ] && echo -e "${#includes[@]} includes:\n${includes[@]}"
+			[ "$verbose" == true ] && echo -e "${#includes[@]} includes:\n${includes[@]}"
 			if [ ${#includes[@]} -ge 1 ]; then
 				for dependency in "${includes[@]}"; do
 
