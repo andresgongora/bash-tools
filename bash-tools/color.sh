@@ -61,7 +61,7 @@
 ##	with an escape sequence. An escape sequence starts with an <ESC>
 ##	character (commonly \e[), followed by one or more formatting codes
 ##	(its possible) to apply more that one color/effect at a time),
-##	and finished by a lower case m. For example, the formatting code 1 
+##	and finished by a lower case m. For example, the formatting code 1
 ##	tells the terminal to print the text bold face. This is acchieved as:
 ##		\e[1m Hello World!
 ##
@@ -170,7 +170,7 @@ get8bitCode()
 		light-blue)
 			echo 64
 			;;
-		light-magenta)
+		light-magenta|light-purple)
 			echo 65
 			;;
 		light-cyan)
