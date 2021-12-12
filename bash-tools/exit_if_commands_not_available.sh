@@ -72,4 +72,4 @@ exitIfCommandsNotAvailable() {
 
 
 ## This should fail
-exitIfCommandsNotAvailable random-command-name another-madeup-command
+#exitIfCommandsNotAvailable random-command-name another-madeup-command
