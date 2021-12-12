@@ -2,7 +2,7 @@
 
 ##  +-----------------------------------+-----------------------------------+
 ##  |                                                                       |
-##  | Copyright (c) 2019-2020, Andres Gongora <mail@andresgongora.com>.     |
+##  | Copyright (c) 2019-2021, Andres Gongora <mail@andresgongora.com>.     |
 ##  |                                                                       |
 ##  | This program is free software: you can redistribute it and/or modify  |
 ##  | it under the terms of the GNU General Public License as published by  |
@@ -27,7 +27,7 @@
 ##	output file.
 ##
 ##	This script contains two functions:
-##	- include() 
+##	- include()
 ##		is meant to be used by stripts that want to source other
 ##		script that may contain functions it needs.
 ##
@@ -58,11 +58,52 @@
 ##	include() { ··· }
 ##	include "B.sh"
 ##
-##include() { source "$( cd $( dirname "${BASH_SOURCE[0]}" ) >/dev/null 2>&1 && pwd )/$1" ; } #this one has problems with recursivity
-##include(){ local d=$PWD; cd "$(dirname $PWD/$1 )"; . "$(basename $1)"; cd "$d";} # issues if script called from a different pwd
-#include(){ [ -z "$_IR" ]&&_IR="$PWD"&&cd $( dirname "$PWD/$0" )&&. "$1"&&cd "$_IR"&&unset _IR||. $1;}# does not include sub-includes if in a different path
-##include(){ { [ -z "$_IR" ]&&_IR="$PWD"&&cd "$(dirname "$PWD/$0")"&&include "$1"&&cd "$_IR"&&unset _IR;}||{ local d=$PWD&&cd "$(dirname "$PWD/$1")"&&. "$(basename "$1")"&&cd "$d";}||{ echo "Include failed $PWD->$1"&&exit 1;};} ## issues when script is sourced
+##
+##
+##	Old attempts (not removed since they help a bit with maintenance):
+##
+#		include() { source "$( cd $( dirname "${BASH_SOURCE[0]}" ) >/dev/null 2>&1 && pwd )/$1" ; } #this one has problems with recursivity
+#		include(){ local d=$PWD; cd "$(dirname $PWD/$1 )"; . "$(basename $1)"; cd "$d";} # issues if script called from a different pwd
+#		include(){ [ -z "$_IR" ]&&_IR="$PWD"&&cd $( dirname "$PWD/$0" )&&. "$1"&&cd "$_IR"&&unset _IR||. $1;}# does not include sub-includes if in a different path
+#		include(){ { [ -z "$_IR" ]&&_IR="$PWD"&&cd "$(dirname "$PWD/$0")"&&include "$1"&&cd "$_IR"&&unset _IR;}||{ local d=$PWD&&cd "$(dirname "$PWD/$1")"&&. "$(basename "$1")"&&cd "$d";}||{ echo "Include failed $PWD->$1"&&exit 1;};} # issues when script is sourced
+##
+##
+##
 [ "$(type -t include)" != 'function' ]&&{ include(){ { [ -z "$_IR" ]&&_IR="$PWD"&&cd "$(dirname "${BASH_SOURCE[0]}")"&&include "$1"&&cd "$_IR"&&unset _IR;}||{ local d="$PWD"&&cd "$(dirname "$PWD/$1")"&&. "$(basename "$1")"&&cd "$d";}||{ echo "Include failed $PWD->$1"&&exit 1;};};}
+##
+## How it works:
+##
+## 	If 'include' not defined as a function, then
+##	Define include():
+##		if :
+##			'cd' to dir containing the script that invokes 'include' for the
+##			first time, then call 'include' again to recursively source all
+##			target scripts using relative paths, finally restore orignial 'PWD'.
+##
+##			1. If '_IR' (include recursiverly) has never been set, use it to
+##			   store the current 'PWD'.
+##			2. Invoke 'include()' again for '$1', this time it will use the next
+##			   'if else' since '_IR' will be defined. It will source all scripts
+##			   and, if these scripts also use 'include()', do so recursively
+##			   in the same manner as '_IR' will also be set for them. When done,
+##			   the script '$1' and its dependencies should be sourced.
+##			4. Unset '_IR' to avoid environment pollution and ensure that other
+##			   calls to 'include()' in the top-level script work as intended
+##
+##		else if :
+##			Source target script using relative path from current script.
+##			Note: because the target script may have its own includes using
+##			relative paths, we must 'cd' to its dir first, then come back.
+##
+##			1. Store current 'PWD' as 'd'.
+##			2. 'cd' to directory containing target script to be sourced ('$1').
+##			3. Source target script (we use the '.' operator for brevity)
+##			4. 'cd' back to 'd' (previous 'PWD').
+##
+##		else:
+##			Report that the script could not be included (sourced) and exit.
+
+
 
 
 
@@ -121,7 +162,7 @@ assembleScript()
 				          grep "$regex_include" |\
 				          sed -e 's/^[ \t]*include[ \t]//g;s/["'\'']//g' ))
 
-			
+
 
 			## COPY DEPENDENCIES OVER (IF ANY)
 			[ $verbose == true ] && echo -e "${#includes[@]} includes:\n${includes[@]}"
@@ -131,7 +172,7 @@ assembleScript()
 					## HANDLE RECURSIVELY
 					local dependency_file="$input_script_dir/$dependency"
 					copyIncludes "$dependency_file" "$output_script"
-					
+
 					## COPY INTO OUTPUT FILE
 					copyFileContent "$dependency_file" "$output_script"
 				done
@@ -151,7 +192,7 @@ assembleScript()
 
 
 	if [ "$#" -lt 2 ]; then
-		echo "installScript: at least 2 arguments expected, $@" 
+		echo "installScript: at least 2 arguments expected, $@"
 		return
 	fi
 
@@ -167,8 +208,8 @@ assembleScript()
 
 	[ $verbose == true ] && echo "$input_script -> $output_script"
 	if [ -f "$input_script" ]; then
-		
-		## CREATE OUTPUT FILE AND WRITE HEADER (IF ANY)	
+
+		## CREATE OUTPUT FILE AND WRITE HEADER (IF ANY)
 		[ -d "$output_dir" ] || mkdir -p "$output_dir"
 		echo -e "#!/bin/bash\n" > "$output_script"
 		[ -z "$script_header" ] || echo -e "$script_header" >> "$output_script"
@@ -195,4 +236,3 @@ assembleScript()
 ##==============================================================================
 
 #installScript "$@"
-
