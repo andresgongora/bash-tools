@@ -26,7 +26,7 @@
 ##	===========
 ##
 ##	Helper script that prints a warning and calls 'exit 1' if any command
-##  name passed as an argument is not available on the system. 
+##  name passed as an argument is not available on the system.
 ##
 ##
 ##
@@ -51,11 +51,11 @@ exitIfCommandsNotAvailable() {
 			echo "'${maybe_command}' not found."
 			num_missing=$((num_missing+1))
 		fi
-	done	
+	done
 
 	## Abort if any package was missing
 	if [ $num_missing -gt 0 ]; then
-		echo "$num_missing commands were missing. Please install needed packages.\nAborting."
+		echo "Aborting: $num_missing commands were missing. Please install needed packages."
 		exit 1
 	fi
 }
@@ -72,4 +72,4 @@ exitIfCommandsNotAvailable() {
 
 
 ## This should fail
-#exitIfCommandsNotAvailable random-command-name another-madeup-command
+exitIfCommandsNotAvailable random-command-name another-madeup-command
