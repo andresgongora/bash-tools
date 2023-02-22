@@ -47,7 +47,7 @@ shortenPath()
 	local path=$1
 	local max_length=$2
 	local default_max_length=25
-	local trunc_symbol="..."
+	local trunc_symbol=${3:-"…"}
 
 
     ## CHECK PARAMETERS AND INIT
