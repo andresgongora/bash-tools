@@ -2,7 +2,7 @@
 
 ##  +-----------------------------------+-----------------------------------+
 ##  |                                                                       |
-##  | Copyright (c) 2019-2020, Andres Gongora <mail@andresgongora.com>.     |
+##  | Copyright (c) 2019-2024, Andres Gongora <mail@andresgongora.com>.     |
 ##  |                                                                       |
 ##  | This program is free software: you can redistribute it and/or modify  |
 ##  | it under the terms of the GNU General Public License as published by  |
@@ -30,22 +30,22 @@
 
 
 
-##==============================================================================
+##==================================================================================================
 ##	DEPENDENCIES
-##==============================================================================
+##==================================================================================================
 
 
 parallelFor() {
-	local cmd=$1 
-	local argument_list=("${@:2:$#}") 
+	local cmd=$1
+	local argument_list=("${@:2:$#}")
 	local max_num_threads=$(nproc) # Num max threads
-	
+
 	for argument in "${argument_list[@]}"; do
 		## WAIT IF TO MANY JOBS ALREADY RUNNIGN
 		if [ $(jobs -r -p | wc -l) -ge $max_num_threads ]; then
 			wait -n # Wait only for first job
 		fi
-	
+
 		## RUN COMMAND
 		( "$cmd" $argument ) &
 	done
@@ -56,9 +56,9 @@ parallelFor() {
 
 
 
-##==============================================================================
+##==================================================================================================
 ##	TEST
-##==============================================================================
+##==================================================================================================
 
 
 ## 1 ARGUMENT

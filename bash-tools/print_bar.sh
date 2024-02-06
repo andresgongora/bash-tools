@@ -20,25 +20,24 @@
 ##  +-----------------------------------------------------------------------+
 
 
-
-##==============================================================================
-##	printBar
-##	Prints a bar that is filled depending on the relation between
-##	CURRENT and MAX. Example: [|||||    ]
+##==================================================================================================
+## @brief Print a bar that is filled depending on the relation between CURRENT and MAX.
 ##
+## Examples:
+##      [|||||    ]
+##      ━━━━━━━━━━━
 ##
-##	Arguments:
-##	1. CURRENT:       amount to display on the bar.
-##	2. MAX:           amount that means that the bar should be printed
-##	                  completely full.
-##	3. SIZE:          length of the bar as number of characters.
+## @arg $1: CURRENT: amount to display on the bar.
+## @arg $2: MAX: amount that means that the bar should be printed completely full.
+## @arg $3: SIZE: length of the bar as number of characters.
+## @arg $4: BRACKET_CHAR_L: left bracket character. Defaults to '['. Use '$' to omit.
+## @arg $5: BAR_FILL_CHAR:  bar character. Defaults to '|'.
+## @arg $6: BAR_EMPTY_CHAR: bar background. Defaults to ' '.
+## @arg $7: BRACKET_CHAR_R: left bracket character. Defaults to ']'. Use '$' to omit.
+## @return: prints the bar to the standard output.
 ##
-##
-##	Optional arguments:
-##	4. BRACKET_CHAR_L: left bracket character. Defaults to '['. Use '$' to omit.
-##	5. BAR_FILL_CHAR:  bar character. Defaults to '|'.
-##	6. BAR_EMPTY_CHAR: bar background. Defaults to ' '.
-##	7. BRACKET_CHAR_R: left bracket character. Defaults to ']'. Use '$' to omit.
+## @example printBar 3 10 10
+## @example printBar 3 10 10 $'\u2502' $'\u2500' $'\u0020' $'\u2502'
 ##
 printBar()
 {

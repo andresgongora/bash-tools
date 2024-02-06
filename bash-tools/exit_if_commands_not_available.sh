@@ -2,7 +2,7 @@
 
 ##  +-----------------------------------+-----------------------------------+
 ##  |                                                                       |
-##  | Copyright (c) 2019-2021, Andres Gongora <mail@andresgongora.com>.     |
+##  | Copyright (c) 2019-2024, Andres Gongora <mail@andresgongora.com>.     |
 ##  |                                                                       |
 ##  | This program is free software: you can redistribute it and/or modify  |
 ##  | it under the terms of the GNU General Public License as published by  |
@@ -20,28 +20,22 @@
 ##  +-----------------------------------------------------------------------+
 
 
-
+##==================================================================================================
+## @brief Check if command is not available and exit if so.
 ##
-##	DESCRIPTION
-##	===========
-##
-##	Helper script that prints a warning and calls 'exit 1' if any command
-##  name passed as an argument is not available on the system.
-##
-##
-##
-##	USAGE
-##	=====
-##
-##	exitIfCommandsNotAvailable <command 1> <command 2> <command 3>
-##
+requireCommand() { command -v $1 >/dev/null || { echo "Aborting: '$1' not found"; exit 1; }; }
 
 
-
-##==============================================================================
-##	exitIfCommandsNotAvailable
-##==============================================================================
-
+##==================================================================================================
+## @brief Check if any of the commands passed as arguments are not available.
+##
+## Check if any of the commands passed as arguments are not available. If any
+## command is not available, print a warning and call 'exit 1'.
+##
+## @param $@: list of commands to check.
+## @exit 1 if any command is not available, continues otherwsie.
+## @example exitIfCommandsNotAvailable nano ssh
+##
 exitIfCommandsNotAvailable() {
 	local num_missing=0
 
@@ -61,15 +55,13 @@ exitIfCommandsNotAvailable() {
 }
 
 
-
-##==============================================================================
+##==================================================================================================
 ##	DEBUG
-##==============================================================================
+##==================================================================================================
 
 ## This should work
 #exitIfCommandsNotAvailable nano # 1 command
 #exitIfCommandsNotAvailable nano ssh # 2 commands
-
 
 ## This should fail
 #exitIfCommandsNotAvailable random-command-name another-madeup-command

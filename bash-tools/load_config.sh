@@ -2,7 +2,7 @@
 
 ##  +-----------------------------------+-----------------------------------+
 ##  |                                                                       |
-##  | Copyright (c) 2019-2020, Andres Gongora <mail@andresgongora.com>.     |
+##  | Copyright (c) 2019-2024, Andres Gongora <mail@andresgongora.com>.     |
 ##  |                                                                       |
 ##  | This program is free software: you can redistribute it and/or modify  |
 ##  | it under the terms of the GNU General Public License as published by  |
@@ -20,8 +20,14 @@
 ##  +-----------------------------------------------------------------------+
 
 
+##==================================================================================================
+## @brief Load configuration parameters into the current script from a config file.
 ##
-##	DESCRIPTION:
+##	Iterate through the configuration file searching for lines
+##	containing key-parameter pairs. If there is a variable in the scripts
+##	scope with the same name as the key, it will write to it the value
+##	of the configuration parameter.
+##
 ##	Very simple script to load configuration parameters into other scripts.
 ##	It can be used to retrieve all sorts of variables from a configuration
 ##	file, such that a script and its configuration parameters may be kept
@@ -32,8 +38,6 @@
 ##	environment, this script only loads the configuration for variables
 ##	that exists and are not empty in its execution scope. This works both
 ##	for local and global variables
-##
-##
 ##
 ##	EXAMPLE:
 ##	Assume the file "/home/user/config" exists and contains:
@@ -59,7 +63,7 @@
 ##
 ##
 ##	CONFIGURATION FILES
-##	* Each line is expected to contain a ingle KEY-VALUE pair.
+##	* Each line is expected to contain a single KEY-VALUE pair.
 ##		* The first word in a line will be treated as the KEY.
 ##		  It may contain no spaces inside, but accepts all sort of
 ##		  punctuation marks if desired (e.g. .,-_).
@@ -77,24 +81,10 @@
 ##
 ##	TODO: Explain multilines
 ##
-
-
-
-##==============================================================================
-##  FUNCTION
-##==============================================================================
-
-##------------------------------------------------------------------------------
 ##
-##	loadConfigFile
-##
-##	It will iterate through the configuration file searching for lines
-##	containing key-parameter pairs. If there is a variable in the scripts
-##	scope with the same name as the key, it will write to it the value
-##	of the configuration parameter.
-##
-##	Arguments:
-##	1. Path to configuration file
+## @arg $1: Path to configuration file.
+## @return None. Exports variables into the scope it is called from.
+## @exit If configuration file does not exist, the script will exit immediately.
 ##
 loadConfigFile() {
 
@@ -213,7 +203,3 @@ loadConfigFile() {
 	## END OF WHILE LOOP
 	done < $config_file
 }
-
-
-
-### EOF ###

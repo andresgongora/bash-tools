@@ -2,7 +2,7 @@
 
 ##  +-----------------------------------+-----------------------------------+
 ##  |                                                                       |
-##  | Copyright (c) 2019-2020, Andres Gongora <mail@andresgongora.com>.     |
+##  | Copyright (c) 2019-2024, Andres Gongora <mail@andresgongora.com>.     |
 ##  |                                                                       |
 ##  | This program is free software: you can redistribute it and/or modify  |
 ##  | it under the terms of the GNU General Public License as published by  |
@@ -54,7 +54,7 @@ editTextFile()
 	## CHECK IF FILE EXISTS AND CAN BE WRITTEN
 	## - A file must have been specified
 	## - If file does not exist, create it
-	## - If file can not be written, exit	
+	## - If file can not be written, exit
 	if [ -z "$file" ]; then
 		echo "No file specified"
 		exit 1
@@ -69,7 +69,7 @@ editTextFile()
 
 	## OPERATE ON FILE
 	case $option in
-	
+
 	append)
 		flat_text=$(echo -e "$text\n" | sed ':a;N;$!ba;s/[]\/$*.^|[]/\\&/g;s/[\n\t]*$//g;s/[\n\t]/\\\\\\&/g')
 		found_text=$(sed -n ':a;N;$!ba;s/[\n\t]/\\&/g;/'"$flat_text"'/p' $file)

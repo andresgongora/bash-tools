@@ -2,7 +2,7 @@
 
 ##  +-----------------------------------+-----------------------------------+
 ##  |                                                                       |
-##  | Copyright (c) 2019-2020, Andres Gongora <mail@andresgongora.com>.     |
+##  | Copyright (c) 2019-2024, Andres Gongora <mail@andresgongora.com>.     |
 ##  |                                                                       |
 ##  | This program is free software: you can redistribute it and/or modify  |
 ##  | it under the terms of the GNU General Public License as published by  |
@@ -30,9 +30,9 @@
 
 
 
-##==============================================================================
+##==================================================================================================
 ##	TERMINAL CURSOR
-##==============================================================================
+##==================================================================================================
 
 enableTerminalLineWrap()
 {
@@ -120,9 +120,9 @@ moveCursorLeft()
 
 
 
-##==============================================================================
+##==================================================================================================
 ##	FUNCTIONS
-##==============================================================================
+##==================================================================================================
 
 ##------------------------------------------------------------------------------
 ##
@@ -196,7 +196,7 @@ printWithOffset()
 		local text=$(echo "$text" |\
 		             sed "s/^/$col_spacer/g;s/\\\\n/\\\\n$col_spacer/g")
 	fi
-	
+
 
 	## PRINT TEXT WITHOUT LINE WRAP
 	disableTerminalLineWrap
@@ -263,7 +263,7 @@ printTwoElementsSideBySide()
 	local e_2_v_pad=$(( ( $e_2_rows > $e_1_rows ) ?\
 		0 : (( ($e_1_rows - $e_2_rows)/2 )) ))
 	local max_rows=$(( ( $e_1_rows > $e_2_rows ) ? $e_1_rows : $e_2_rows ))
-	
+
 
 	## CLEAN PRINTING AREA
 	for i in `seq $max_rows`; do printf "\n"; done
@@ -277,7 +277,7 @@ printTwoElementsSideBySide()
 	moveCursorToSavedPosition
 
 
-	## LEAVE CURSOR AT "SAFE" POSITION	
+	## LEAVE CURSOR AT "SAFE" POSITION
 	moveCursorDown $(( $max_rows ))
 }
 
