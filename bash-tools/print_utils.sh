@@ -208,6 +208,18 @@ printWithOffset()
 
 ##------------------------------------------------------------------------------
 ##
+printTwoElementsTop() {
+    ## GET ELEMENTS TO PRINT
+    local element_1=$1
+    local element_2=$2
+
+    ## PRINT FIRST ELEMENT
+    echo -e "$element_1"
+
+    ## PRINT SECOND ELEMENT
+    echo -e "$element_2"
+}
+
 printTwoElementsSideBySide()
 {
 	## GET ELEMENTS TO PRINT
