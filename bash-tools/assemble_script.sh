@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##  +-----------------------------------+-----------------------------------+
 ##  |                                                                       |
@@ -212,7 +212,7 @@ assembleScript()
 
 		## CREATE OUTPUT FILE AND WRITE HEADER (IF ANY)
 		[ -d "$output_dir" ] || mkdir -p "$output_dir"
-		echo -e "#!/bin/bash\n" > "$output_script"
+		echo -e "#!/usr/bin/env bash\n" > "$output_script"
 		[ -z "$script_header" ] || echo -e "$script_header" >> "$output_script"
 
 		## PARSE INCLUDES, COPY SCRIPT, MAKE EXECUTABLE
